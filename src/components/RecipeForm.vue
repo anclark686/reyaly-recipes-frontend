@@ -131,7 +131,7 @@
             rows="5"
             cols="33"
             id="instruction-input"
-            v-model="description"
+            v-model="body"
           />
         </div>
       </div>
