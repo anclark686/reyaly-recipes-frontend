@@ -7,14 +7,33 @@
           <tr>
             <th>Recipe</th>
             <th>Description</th>
+            <th>Modify</th>
           </tr>
-          <tr v-for="recipe in recipes" v-bind:key="recipe.id">
+          <tr v-for="(recipe, i) in recipes" v-bind:key="recipe.id">
             <td>
               <a :href="'/recipes/' + recipe.id" class="recipe-link">
                 {{ recipe.title }}
               </a>
             </td>
             <td>{{ recipe.description }}</td>
+            <td class="modify-btns">
+              <button class="modify-btn">
+                <a
+                  :href="'/recipes/' + recipe.id + '/edit'"
+                  class="recipe-link"
+                >
+                  Edit
+                </a>
+              </button>
+              <button
+                class="modify-btn"
+                id="show-modal"
+                @click="preDelete(recipe.id, i, recipe.title)"
+              >
+                Delete
+              </button>
+              <!-- @click="deleteRecipe(recipe.id, i)" -->
+            </td>
           </tr>
         </table>
       </div>
@@ -25,19 +44,48 @@
         </button>
       </div>
     </div>
+    <DeleteModal
+      v-if="showModal"
+      @close="showModal = false"
+      @delRecipe="deleteRecipe"
+      :recipeName="deleteInfo.title"
+    />
   </main>
 </template>
 
 <script>
 import Axios from "axios";
 import { RouterLink } from "vue-router";
+import DeleteModal from "../components/DeleteModal.vue";
 
 export default {
+  components: { DeleteModal },
   data() {
     return {
       active: false,
+      showModal: false,
       recipes: [],
+      deleteInfo: {},
     };
+  },
+  methods: {
+    preDelete(id, idx, title) {
+      this.showModal = true;
+      this.deleteInfo = { id: id, idx: idx, title: title };
+    },
+    deleteRecipe() {
+      this.showModal = false;
+      this.recipes.splice(this.deleteInfo.idx, 1);
+
+      Axios.delete(`http://localhost:3000/recipes/${this.deleteInfo.id}`)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      this.deleteInfo = {};
+    },
   },
   mounted() {
     window.document.onscroll = () => {
@@ -53,12 +101,7 @@ export default {
 
     Axios.get("http://localhost:3000/recipes")
       .then((res) => {
-        console.log(res.data)
         this.recipes = res.data.data;
-        // console.log(this.recipes);
-        for (const recipe of this.recipes) {
-          console.log(recipe.title);
-        }
       })
       .catch((error) => {
         console.log(error);
@@ -92,7 +135,7 @@ h1 {
 
 .recipe-table {
   text-align: center;
-  border-collapse:collapse;
+  border-collapse: collapse;
 }
 
 th {
@@ -100,6 +143,22 @@ th {
 }
 .recipe-link {
   color: rgb(129, 12, 10);
+}
+
+.modify-btns {
+  width: 150px;
+}
+
+.modify-btn {
+  background-color: rgb(129, 12, 10);
+  color: white;
+  width: 70px;
+  border-radius: 5px;
+}
+
+.modify-btn a {
+  color: white;
+  text-decoration: none;
 }
 
 .none-found {

@@ -1,8 +1,7 @@
 <template>
   <div class="new-recipe" :class="{ needPadding: active }">
-    
     <h1 v-if="formType === 'create'">Create a New Recipe</h1>
-    <h1 v-else-if="formType === 'update'">Update {{ recipeName }}</h1>
+    <h1 v-else-if="formType === 'update'">Update {{ title }}</h1>
     <form
       action="submit"
       @submit.prevent="onSubmit"
@@ -30,11 +29,11 @@
 
       <h3 class="subheaders">Ingredients</h3>
       <div class="ingredients">
-        <ul class="list">
+        <ul class="ingredient-list">
           <li
             v-for="(ingredient, i) in ingredients"
             v-bind:key="i"
-            class="list-item"
+            :class="i % 2 !== 0 ? 'list-item every-other' : 'list-item'"
           >
             <p>{{ `${ingredient.quantity} of ${ingredient.name}` }}</p>
             <button
@@ -61,7 +60,7 @@
           <input
             id="ingredient-input"
             type="text"
-            v-model="ingredient"
+            v-model="name"
             @keyup.enter="onEnterIngredients"
           />
         </div>
@@ -76,13 +75,15 @@
 
       <h3 class="subheaders">Instructions</h3>
       <div class="instructions">
-        <ul class="list">
+        <ul class="instruction-list">
           <li
             v-for="(instruction, i) in instructions"
             v-bind:key="i"
-            class="list-item"
+            :class="i % 2 !== 0 ? 'list-item every-other' : 'list-item'"
           >
-            <p>{{ `${instruction.step}: ${instruction.body}` }}</p>
+            <p class="instruction-item">
+              {{ `${instruction.step}: ${instruction.body}` }}
+            </p>
             <button
               class="del-btn"
               @click.prevent="deleteInstructionRow(i, instruction)"
@@ -106,7 +107,7 @@
           <input
             id="instruction-input"
             type="text"
-            v-model="instruction"
+            v-model="body"
             @keyup.enter="onEnterInstruction"
           />
         </div>
@@ -126,7 +127,16 @@
         <div v-if="formNotReady" class="final-error">
           <p>Please complete required fields</p>
         </div>
-        <button id="add-recipe" type="submit">Add Recipe</button>
+        <button v-if="formType === 'create'" id="add-recipe" type="submit">
+          Add Recipe
+        </button>
+        <button
+          v-else-if="formType === 'update'"
+          id="edit-recipe"
+          type="submit"
+        >
+          Submit Changes
+        </button>
       </div>
     </form>
   </div>
@@ -137,9 +147,8 @@ import Axios from "axios";
 import router from "../router";
 
 export default {
-  props:{
+  props: {
     formType: String,
-    recipeName: String,
   },
   data() {
     return {
@@ -147,10 +156,10 @@ export default {
       title: "",
       description: "",
       quantity: "",
-      ingredient: "",
+      name: "",
       step: 1,
       steps: [],
-      instruction: "",
+      body: "",
       ingredients: [],
       instructions: [],
       missingTitle: false,
@@ -164,38 +173,50 @@ export default {
       formNotReady: false,
     };
   },
+  computed: {
+    recipe() {
+      const recipe = {
+        title: this.title,
+        description: this.description,
+        ingredients: this.ingredients,
+        instructions: this.instructions,
+      };
+      return recipe;
+    },
+    id() {
+      const url = window.location.href;
+      const id = url.split("/").slice(-2)[0];
+      return id;
+    },
+  },
   methods: {
     deleteIngredientRow(e) {
-      console.log(e);
       this.ingredients.splice(e, 1);
     },
     deleteInstructionRow(e, ins) {
-      console.log(e);
-      console.log(ins)
-      const index = this.steps.indexOf(ins.step)
-      console.log(index)
+      const index = this.steps.indexOf(ins.step);
       if (index !== -1) {
         this.steps.splice(index, 1);
-        this.step = ins.step
+        this.step = ins.step;
       }
       this.instructions.splice(e, 1);
     },
     addIngredient(e) {
-      if (!this.quantity || !this.ingredient) {
+      if (!this.quantity || !this.name) {
         this.missingQuantOrIng = true;
       } else {
         this.missingIngredients = false;
         this.missingQuantOrIng = false;
         this.ingredients.push({
           quantity: this.quantity,
-          ingredient: this.ingredient,
+          name: this.name,
         });
         this.quantity = "";
         this.name = "";
       }
     },
     addInstruction(e) {
-      if (!this.step || !this.instruction) {
+      if (!this.step || !this.body) {
         this.missingStepOrIns = true;
       } else if (this.steps.includes(this.step)) {
         this.duplicateStep = true;
@@ -207,18 +228,17 @@ export default {
         this.missingStepOrIns = false;
         this.instructions.push({
           step: this.step,
-          body: this.instruction,
+          body: this.body,
         });
-        this.steps.push(this.step)
+        this.steps.push(this.step);
         this.steps.sort((a, b) => {
-            return a - b;
-        })
+          return a - b;
+        });
         this.step = this.steps.at(-1) + 1;
-        this.instruction = "";
+        this.body = "";
         this.instructions.sort((a, b) => {
-            return a.step - b.step;
-        })
-        
+          return a.step - b.step;
+        });
       }
     },
     onEnterIngredients() {
@@ -241,7 +261,7 @@ export default {
         this.missingInstructions = true;
       }
     },
-    onSubmit() {
+    Add() {
       if (
         this.title &&
         this.description &&
@@ -249,61 +269,74 @@ export default {
         this.instructions.length >= 1
       ) {
         this.formNotReady = false;
-        const recipe = {
-          title: this.title,
-          description: this.description,
-          ingredients: this.ingredients,
-          instructions: this.instructions,
-        };
-
-        Axios.post("http://localhost:3000/recipes", recipe)
+        Axios.post("http://localhost:3000/recipes", this.recipe)
           .then((res) => {
-            console.log(res.data);
             router.push({ name: "recipe", params: { id: res.data.id } });
           })
           .catch((error) => {
             console.log(error);
           });
-        console.log("form submitted");
-        console.log(`title=${this.title}, description=${this.description}`);
-        console.log(
-          `quantity: ${this.quantity}, ingredient: ${this.ingredient}, step: ${this.step}, instruction: ${this.instruction}`
-        );
       } else {
         this.formNotReady = true;
         this.validateFields();
       }
     },
-  },
-  async mounted() {
-    const url = window.location.href;
-    const id = url.split("/").slice(-2)[0];
-    console.log(url.split("/").slice(-2)[0])
-    console.log(url.split("/"))
-    console.log(id);
+    Edit() {
+      if (
+        this.title &&
+        this.description &&
+        this.ingredients.length >= 1 &&
+        this.instructions.length >= 1
+      ) {
+        this.formNotReady = false;
+        this.recipe.id = this.id;
 
-    await Axios.get(`http://localhost:3000/recipes/${id}`)
-      .then((res) => {
-        console.log(res.data);
-        this.title = res.data.data.recipe.title;
-        this.description = res.data.data.recipe.description;
-        this.ingredients = res.data.data.ingredients;
-        this.instructions = res.data.data.instructions;
-        console.log(res.data.data);
-        console.log(this.title);
-        console.log(this.description);
-        this.instructions.sort((a, b) => {
+        Axios.put(`http://localhost:3000/recipes/${this.id}`, this.recipe)
+          .then((res) => {
+            router.push({
+              name: "recipe",
+              params: { id: res.data.id },
+              query: { success: true },
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        this.formNotReady = true;
+        this.validateFields();
+      }
+    },
+    onSubmit() {
+      if (this.formType === "create") {
+        this.Add();
+      } else if (this.formType === "update") {
+        this.Edit();
+      }
+    },
+  },
+
+  async mounted() {
+    if (this.formType === "update") {
+      await Axios.get(`http://localhost:3000/recipes/${this.id}`)
+        .then((res) => {
+          this.title = res.data.data.recipe.title;
+          this.description = res.data.data.recipe.description;
+          this.ingredients = res.data.data.ingredients;
+          this.instructions = res.data.data.instructions;
+          this.instructions.sort((a, b) => {
             return a.step - b.step;
+          });
+          for (const i of this.instructions) {
+            this.steps.push(i.step);
+          }
+          this.step = this.steps.at(-1) + 1;
         })
-        for (const i of this.instructions) {
-          console.log(i)
-          this.steps.push(i.step)
-        }
-        console.log(this.steps)
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+        .catch((error) => {
+          console.log(error);
+          router.push({ name: "404" });
+        });
+    }
 
     window.document.onscroll = () => {
       let navBar = document.getElementById("nav");
@@ -355,17 +388,37 @@ h1 {
   margin-bottom: 20px;
 }
 
-.list {
+.ingredient-list,
+.instruction-list {
   list-style-type: none;
   text-align: left;
-  width: 50%;
   margin: 0 auto 20px auto;
+  padding: 0;
+  border: 1px solid #E4E4E4;
+  border-radius: 8px;
+}
+
+.ingredient-list {
+  width: 50%;
+}
+
+.instruction-list {
+  width: 75%;
+}
+
+.every-other {
+  background-color: rgb(242, 227, 227);
 }
 
 .list-item {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  padding: 5px;
+}
+
+.instruction-item {
+  padding: 5px
 }
 
 .del-btn {
@@ -435,18 +488,27 @@ h1 {
   margin: 50px auto;
 }
 
-#add-recipe {
+#add-recipe,
+#edit-recipe {
   background-color: rgb(129, 12, 10);
   color: white;
   height: 50px;
-  width: 125px;
   font-size: larger;
   margin: auto;
   text-align: center;
   border-radius: 5px;
 }
 
-.error, .final-error {
+#add-recipe {
+  width: 125px;
+}
+
+#edit-recipe {
+  width: 200px;
+}
+
+.error,
+.final-error {
   background-color: rgb(247, 216, 222);
   color: rgb(129, 12, 10);
   margin: 10px auto;

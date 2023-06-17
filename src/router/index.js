@@ -32,6 +32,11 @@ const router = createRouter({
       name: 'editRecipe',
       component: () => import('../views/EditRecipe.vue')
     },
+    {
+      path: '/notfound',
+      name: '404',
+      component: () => import('../views/NoRecipe.vue')
+    },
   ]
 })
 
