@@ -7,12 +7,12 @@
     <div v-else class="recipe-container">
       <div v-if="recipes.length !== 0" class="found-recipes">
         <table class="recipe-table">
-          <tr>
+          <tr id="table-header">
             <th>Recipe</th>
             <th>Description</th>
             <th>Modify</th>
           </tr>
-          <tr v-for="(recipe, i) in recipes" v-bind:key="recipe.id">
+          <tr v-for="(recipe, i) in recipes" v-bind:key="recipe.id" class="recipe-row">
             <td>
               <a :href="'/recipes/' + recipe.id" class="recipe-link">
                 {{ recipe.title }}
@@ -148,6 +148,10 @@ h1 {
 th {
   border-bottom: 2px solid black;
 }
+
+tr {
+  border-bottom: 1px solid #E4E4E4;
+}
 .recipe-link {
   color: rgb(129, 12, 10);
 }
@@ -185,5 +189,35 @@ th {
 #add-new a {
   color: white;
   text-decoration: none;
+}
+
+@media only screen and (max-width: 600px) {
+  .needPadding {
+    padding-top: 0px;
+  }
+
+  .recipe-container {
+    width: 75%;
+    padding: 10px;
+  }
+
+  th, #table-header {
+    display: none;
+  }
+
+  .recipe-row {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+  }
+
+  .modify-btns {
+    text-align: center;
+    margin: 5px auto;
+  }
+  .modify-btn {
+    text-align: center;
+    margin: 2px;
+  }
 }
 </style>

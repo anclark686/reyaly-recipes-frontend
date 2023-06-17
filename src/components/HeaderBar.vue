@@ -5,9 +5,9 @@
       <h1 class="brand">Reyaly Recipes</h1>
       <div class="header-links">
         <RouterLink to="/">Home</RouterLink>
-        <span> | </span>
+        <span class="divider"> | </span>
         <RouterLink to="/recipes">All Recipes</RouterLink>
-        <span> | </span>
+        <span class="divider"> | </span>
         <RouterLink to="/new">New Recipe</RouterLink>
       </div>
     </div>
@@ -22,7 +22,6 @@ export default {
       active: false,
     };
   },
-  
 };
 </script>
 
@@ -53,4 +52,24 @@ export default {
   margin-bottom: 100px;
 }
 
+@media only screen and (max-width: 600px) {
+  .header {
+    justify-content: space-around;
+  }
+  .sticky {
+    position: relative;
+    padding: 15px;
+    margin-bottom: 0px;
+    width: 93.4%;
+  }
+}
+.header-links {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+
+.divider {
+  display: none;
+}
 </style>

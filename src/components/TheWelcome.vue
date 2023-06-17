@@ -73,4 +73,13 @@ export default {
   color: white;
   text-decoration: none;
 }
+
+@media only screen and (max-width: 600px) {
+  .needPadding {
+    padding-top: 0px;
+  }
+  .nav-btn {
+    margin: 20px auto 0px auto;
+  }
+}
 </style>

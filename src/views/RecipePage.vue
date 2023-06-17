@@ -189,4 +189,23 @@ export default {
   color: white;
   text-decoration: none;
 }
+
+@media only screen and (max-width: 600px) {
+  .needPadding {
+    padding-top: 0px;
+  }
+
+  .recipe-container {
+    width: 75%;
+    padding: 10px;
+  }
+
+  .ingredient-list {
+    width: 75%;
+  }
+
+  .instruction-list {
+    width: 90%;
+  }
+}
 </style>

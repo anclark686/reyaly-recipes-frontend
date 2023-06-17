@@ -23,7 +23,19 @@
           <label for="recipe-description" class="recipe-info-label"
             >Description</label
           >
-          <input type="text" id="recipe-description" v-model="description" />
+          <input
+            v-if="!isMobile()"
+            type="text"
+            id="recipe-description"
+            v-model="description"
+          />
+          <textarea
+            v-else
+            rows="3"
+            cols="33"
+            id="recipe-description"
+            v-model="description"
+          />
           <div v-if="missingDescription" class="error">
             <p>Description is required!</p>
           </div>
@@ -56,7 +68,7 @@
           <input id="quantity-input" type="text" v-model="quantity" />
         </div>
 
-        <div class="input-form">
+        <div class="input-form big-input">
           <label for="ingredient-input" class="inner-labels"
             >Ingredient Name</label
           >
@@ -103,15 +115,23 @@
           <input id="step-input" type="number" v-model="step" />
         </div>
 
-        <div class="input-form">
+        <div class="input-form big-input">
           <label for="instruction-input" class="inner-labels"
             >Instruction</label
           >
           <input
+            v-if="!isMobile()"
             id="instruction-input"
             type="text"
             v-model="body"
             @keyup.enter="onEnterInstruction"
+          />
+          <textarea
+            v-else
+            rows="5"
+            cols="33"
+            id="instruction-input"
+            v-model="description"
           />
         </div>
       </div>
@@ -273,7 +293,10 @@ export default {
         this.instructions.length >= 1
       ) {
         this.formNotReady = false;
-        Axios.post("https://reyaly-recipes-backend-8a8ce5084368.herokuapp.com/recipes", this.recipe)
+        Axios.post(
+          "https://reyaly-recipes-backend-8a8ce5084368.herokuapp.com/recipes",
+          this.recipe
+        )
           .then((res) => {
             router.push({ name: "recipe", params: { id: res.data.id } });
           })
@@ -295,7 +318,10 @@ export default {
         this.formNotReady = false;
         this.recipe.id = this.id;
 
-        Axios.put(`https://reyaly-recipes-backend-8a8ce5084368.herokuapp.com/recipes/${this.id}`, this.recipe)
+        Axios.put(
+          `https://reyaly-recipes-backend-8a8ce5084368.herokuapp.com/recipes/${this.id}`,
+          this.recipe
+        )
           .then((res) => {
             router.push({
               name: "recipe",
@@ -319,7 +345,9 @@ export default {
       }
     },
     getinfo() {
-      Axios.get(`https://reyaly-recipes-backend-8a8ce5084368.herokuapp.com/recipes/${this.id}`)
+      Axios.get(
+        `https://reyaly-recipes-backend-8a8ce5084368.herokuapp.com/recipes/${this.id}`
+      )
         .then((res) => {
           this.loading = false;
           this.title = res.data.data.recipe.title;
@@ -339,11 +367,22 @@ export default {
           router.push({ name: "404" });
         });
     },
+    isMobile() {
+      if (
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        )
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
   },
 
   mounted() {
     if (this.formType === "update") {
-      this.getinfo()
+      this.getinfo();
     } else {
       this.loading = false;
     }
@@ -403,7 +442,7 @@ h1 {
   text-align: left;
   margin: 0 auto 20px auto;
   padding: 0;
-  border: 1px solid #E4E4E4;
+  border: 1px solid #e4e4e4;
   border-radius: 8px;
 }
 
@@ -427,7 +466,7 @@ h1 {
 }
 
 .instruction-item {
-  padding: 5px
+  padding: 5px;
 }
 
 .del-btn {
@@ -525,5 +564,47 @@ h1 {
 
 .error {
   width: 60%;
+}
+
+@media only screen and (max-width: 600px) {
+  .needPadding {
+    padding-top: 0px;
+  }
+  .container {
+    width: 75%;
+    padding: 10px;
+  }
+  .ingredient-list {
+    width: 75%;
+  }
+
+  .instruction-list {
+    width: 90%;
+  }
+  .recipe-info {
+    width: 75%;
+  }
+  
+  .inputs {
+    width: 100%;
+    margin: 0 auto;
+    justify-content: space-around;
+  }
+
+  .big-input {
+    width: 90%;
+  }
+
+  #quantity-input {
+    width: 50px;
+  }
+
+  #ingredient-input {
+    width: 90%;
+  }
+
+  #instruction-input {
+    width: 90%;
+  }
 }
 </style>
