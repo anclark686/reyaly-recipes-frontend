@@ -3,7 +3,10 @@
     <div v-if="editSuccess" id="success">
       <p>Record successfully saved!</p>
     </div>
-    <div class="recipe-container">
+    <div v-if="loading" class="recipe-container">
+      <h1 class="loading">Loading...</h1>
+    </div>
+    <div v-else class="recipe-container">
       <div class="info">
         <h1 class="header">{{ title }}</h1>
         <p class="description">{{ description }}</p>
@@ -47,6 +50,7 @@ import router from "../router";
 export default {
   data() {
     return {
+      loading: true,
       active: false,
       title: "",
       description: "",
@@ -78,12 +82,10 @@ export default {
         }, 5000);
       }
     },
-  },
-  async mounted() {
-    this.removeSuccessURL();
-    this.hideSuccess();
-    await Axios.get(`http://localhost:3000/recipes/${this.id}`)
+    getInfo() {
+      Axios.get(`http://localhost:3000/recipes/${this.id}`)
       .then((res) => {
+        this.loading = false;
         this.title = res.data.data.recipe.title;
         this.description = res.data.data.recipe.description;
         this.ingredients = res.data.data.ingredients;
@@ -93,6 +95,12 @@ export default {
         console.log(error);
         router.push({ name: "404" });
       });
+    },
+  },
+  mounted() {
+    this.removeSuccessURL();
+    this.hideSuccess();
+    this.getInfo()
 
     window.document.onscroll = () => {
       let navBar = document.getElementById("nav");
@@ -116,7 +124,7 @@ export default {
   color: green;
 }
 
-.header {
+.header, .loading {
   text-align: center;
 }
 

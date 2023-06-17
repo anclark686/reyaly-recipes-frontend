@@ -1,7 +1,10 @@
 <template>
   <main class="all-recipes" :class="{ needPadding: active }">
     <h1>All recipes</h1>
-    <div class="recipe-container">
+    <div v-if="loading" class="recipe-container">
+      <h1 class="loading">Loading...</h1>
+    </div>
+    <div v-else class="recipe-container">
       <div v-if="recipes.length !== 0" class="found-recipes">
         <table class="recipe-table">
           <tr>
@@ -62,6 +65,7 @@ export default {
   components: { DeleteModal },
   data() {
     return {
+      loading: true,
       active: false,
       showModal: false,
       recipes: [],
@@ -86,26 +90,29 @@ export default {
         });
       this.deleteInfo = {};
     },
+    getinfo() {
+      Axios.get("http://localhost:3000/recipes")
+      .then((res) => {
+        this.loading = false;
+        this.recipes = res.data.data;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    }
   },
   mounted() {
     window.document.onscroll = () => {
       let navBar = document.getElementById("nav");
       if (window.scrollY <= 200) {
         navBar.classList = "header";
-        this.active = false;
+        // this.active = false;
       } else if (window.scrollY > navBar.offsetTop) {
         navBar.classList = "header sticky";
         this.active = true;
       }
     };
-
-    Axios.get("http://localhost:3000/recipes")
-      .then((res) => {
-        this.recipes = res.data.data;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    this.getinfo()
   },
 };
 </script>

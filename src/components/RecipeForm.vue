@@ -2,6 +2,9 @@
   <div class="new-recipe" :class="{ needPadding: active }">
     <h1 v-if="formType === 'create'">Create a New Recipe</h1>
     <h1 v-else-if="formType === 'update'">Update {{ title }}</h1>
+    <div v-if="loading" class="container">
+      <h1 class="loading">Loading...</h1>
+    </div>
     <form
       action="submit"
       @submit.prevent="onSubmit"
@@ -152,6 +155,7 @@ export default {
   },
   data() {
     return {
+      loading: true,
       active: false,
       title: "",
       description: "",
@@ -314,12 +318,10 @@ export default {
         this.Edit();
       }
     },
-  },
-
-  async mounted() {
-    if (this.formType === "update") {
-      await Axios.get(`http://localhost:3000/recipes/${this.id}`)
+    getinfo() {
+      Axios.get(`http://localhost:3000/recipes/${this.id}`)
         .then((res) => {
+          this.loading = false;
           this.title = res.data.data.recipe.title;
           this.description = res.data.data.recipe.description;
           this.ingredients = res.data.data.ingredients;
@@ -336,8 +338,15 @@ export default {
           console.log(error);
           router.push({ name: "404" });
         });
-    }
+    },
+  },
 
+  mounted() {
+    if (this.formType === "update") {
+      this.getinfo()
+    } else {
+      this.loading = false;
+    }
     window.document.onscroll = () => {
       let navBar = document.getElementById("nav");
       if (window.scrollY <= 200) {
