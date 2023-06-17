@@ -273,7 +273,7 @@ export default {
         this.instructions.length >= 1
       ) {
         this.formNotReady = false;
-        Axios.post("http://localhost:3000/recipes", this.recipe)
+        Axios.post("https://reyaly-recipes-backend-8a8ce5084368.herokuapp.com/recipes", this.recipe)
           .then((res) => {
             router.push({ name: "recipe", params: { id: res.data.id } });
           })
@@ -295,7 +295,7 @@ export default {
         this.formNotReady = false;
         this.recipe.id = this.id;
 
-        Axios.put(`http://localhost:3000/recipes/${this.id}`, this.recipe)
+        Axios.put(`https://reyaly-recipes-backend-8a8ce5084368.herokuapp.com/recipes/${this.id}`, this.recipe)
           .then((res) => {
             router.push({
               name: "recipe",
@@ -319,7 +319,7 @@ export default {
       }
     },
     getinfo() {
-      Axios.get(`http://localhost:3000/recipes/${this.id}`)
+      Axios.get(`https://reyaly-recipes-backend-8a8ce5084368.herokuapp.com/recipes/${this.id}`)
         .then((res) => {
           this.loading = false;
           this.title = res.data.data.recipe.title;

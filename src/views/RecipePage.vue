@@ -83,7 +83,7 @@ export default {
       }
     },
     getInfo() {
-      Axios.get(`http://localhost:3000/recipes/${this.id}`)
+      Axios.get(`https://reyaly-recipes-backend-8a8ce5084368.herokuapp.com/recipes/${this.id}`)
       .then((res) => {
         this.loading = false;
         this.title = res.data.data.recipe.title;
