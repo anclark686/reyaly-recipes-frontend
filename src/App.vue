@@ -1,9 +1,7 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HeaderBar from './components/HeaderBar.vue';
-import FooterBar from './components/FooterBar.vue';
-
-
+import { RouterLink, RouterView } from "vue-router";
+import HeaderBar from "./components/HeaderBar.vue";
+import FooterBar from "./components/FooterBar.vue";
 </script>
 
 <template>
@@ -12,15 +10,13 @@ import FooterBar from './components/FooterBar.vue';
     <RouterView />
     <FooterBar />
   </div>
-  
 </template>
 
 <style scoped>
-  .app {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    background-color: #E4E4E4;
-  }
-
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #e4e4e4;
+}
 </style>

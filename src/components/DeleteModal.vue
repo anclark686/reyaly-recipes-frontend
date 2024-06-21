@@ -4,12 +4,12 @@
       <div class="modal-wrapper">
         <div class="modal-container">
           <div class="modal-header">
-            <h3 name="header"> Are you sure? </h3>
+            <h3 name="header">Are you sure?</h3>
           </div>
           <hr />
           <div class="modal-body">
-            <p name="body"> Are you sure you want to delete </p>
-            <p name="body" id="recipe-title"> {{ recipeName }}?</p>
+            <p name="body">Are you sure you want to delete</p>
+            <p name="body" id="recipe-title">{{ recipeName }}?</p>
           </div>
 
           <div class="modal-footer">
@@ -81,7 +81,6 @@ export default {
 #recipe-title {
   font-style: italic;
   font-weight: bold;
-  
 }
 
 .modal-footer {
@@ -89,7 +88,6 @@ export default {
 }
 
 .modal-btn {
-  
   color: white;
   width: 100px;
   margin: 20px 10px;

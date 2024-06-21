@@ -14,8 +14,8 @@
       <div class="list-items">
         <h3 class="subheaders">Ingredients</h3>
         <ul class="ingredient-list">
-          <li 
-            v-for="(ingredient, i) in ingredients" 
+          <li
+            v-for="(ingredient, i) in ingredients"
             v-bind:key="ingredient.id"
             :class="i % 2 !== 0 ? 'list-item every-other' : 'list-item'"
           >
@@ -24,8 +24,8 @@
         </ul>
         <h3 class="subheaders">Instructions</h3>
         <ul class="instruction-list">
-          <li 
-            v-for="(instruction, i) in instructions" 
+          <li
+            v-for="(instruction, i) in instructions"
             v-bind:key="instruction.id"
             :class="i % 2 !== 0 ? 'list-item every-other' : 'list-item'"
           >
@@ -83,24 +83,26 @@ export default {
       }
     },
     getInfo() {
-      Axios.get(`https://reyaly-recipes-backend-8a8ce5084368.herokuapp.com/recipes/${this.id}`)
-      .then((res) => {
-        this.loading = false;
-        this.title = res.data.data.recipe.title;
-        this.description = res.data.data.recipe.description;
-        this.ingredients = res.data.data.ingredients;
-        this.instructions = res.data.data.instructions;
-      })
-      .catch((error) => {
-        console.log(error);
-        router.push({ name: "404" });
-      });
+      Axios.get(
+        `https://reyaly-recipes-backend-8a8ce5084368.herokuapp.com/recipes/${this.id}`
+      )
+        .then((res) => {
+          this.loading = false;
+          this.title = res.data.data.recipe.title;
+          this.description = res.data.data.recipe.description;
+          this.ingredients = res.data.data.ingredients;
+          this.instructions = res.data.data.instructions;
+        })
+        .catch((error) => {
+          console.log(error);
+          router.push({ name: "404" });
+        });
     },
   },
   mounted() {
     this.removeSuccessURL();
     this.hideSuccess();
-    this.getInfo()
+    this.getInfo();
 
     window.document.onscroll = () => {
       let navBar = document.getElementById("nav");
@@ -124,7 +126,8 @@ export default {
   color: green;
 }
 
-.header, .loading {
+.header,
+.loading {
   text-align: center;
 }
 
@@ -154,7 +157,7 @@ export default {
   text-align: left;
   margin: 0 auto 20px auto;
   padding: 0;
-  border: 1px solid #E4E4E4;
+  border: 1px solid #e4e4e4;
   border-radius: 8px;
 }
 

@@ -584,7 +584,7 @@ h1 {
   .recipe-info {
     width: 75%;
   }
-  
+
   .inputs {
     width: 100%;
     margin: 0 auto;

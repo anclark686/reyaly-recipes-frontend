@@ -12,7 +12,11 @@
             <th>Description</th>
             <th>Modify</th>
           </tr>
-          <tr v-for="(recipe, i) in recipes" v-bind:key="recipe.id" class="recipe-row">
+          <tr
+            v-for="(recipe, i) in recipes"
+            v-bind:key="recipe.id"
+            class="recipe-row"
+          >
             <td>
               <a :href="'/recipes/' + recipe.id" class="recipe-link">
                 {{ recipe.title }}
@@ -81,7 +85,9 @@ export default {
       this.showModal = false;
       this.recipes.splice(this.deleteInfo.idx, 1);
 
-      Axios.delete(`https://reyaly-recipes-backend-8a8ce5084368.herokuapp.com/recipes/${this.deleteInfo.id}`)
+      Axios.delete(
+        `https://reyaly-recipes-backend-8a8ce5084368.herokuapp.com/recipes/${this.deleteInfo.id}`
+      )
         .then((res) => {
           console.log(res);
         })
@@ -91,15 +97,17 @@ export default {
       this.deleteInfo = {};
     },
     getinfo() {
-      Axios.get("https://reyaly-recipes-backend-8a8ce5084368.herokuapp.com/recipes")
-      .then((res) => {
-        this.loading = false;
-        this.recipes = res.data.data;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    }
+      Axios.get(
+        "https://reyaly-recipes-backend-8a8ce5084368.herokuapp.com/recipes"
+      )
+        .then((res) => {
+          this.loading = false;
+          this.recipes = res.data.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
   },
   mounted() {
     window.document.onscroll = () => {
@@ -112,7 +120,7 @@ export default {
         this.active = true;
       }
     };
-    this.getinfo()
+    this.getinfo();
   },
 };
 </script>
@@ -150,7 +158,7 @@ th {
 }
 
 tr {
-  border-bottom: 1px solid #E4E4E4;
+  border-bottom: 1px solid #e4e4e4;
 }
 .recipe-link {
   color: rgb(129, 12, 10);
@@ -201,7 +209,8 @@ tr {
     padding: 10px;
   }
 
-  th, #table-header {
+  th,
+  #table-header {
     display: none;
   }
 
